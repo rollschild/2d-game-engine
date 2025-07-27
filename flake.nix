@@ -48,6 +48,15 @@
               SDL2
               SDL2_image
               SDL2_gfx
+              SDL2_ttf
+              SDL2_mixer
+
+              glm
+
+              lua5_4_compat
+              sol2
+
+              imgui
 
               socat
             ];
@@ -57,7 +66,8 @@
               # llvm.libcxx
             ];
 
-            CXXFLAGS = "-std=c++20 -lSDL2 -lSDL2_image -lSDL2_gfx -lm";
+            CXXFLAGS = "-Wall -std=c++20";
+            LDFLAGS = "-lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -llua -lm";
             # CPATH = builtins.concatStringsSep ":" [
             # (lib.makeSearchPathOutput "dev" "include" [ llvm.libcxx ])
             # (lib.makeSearchPath "resource-root/include" [ llvm.clang ])
