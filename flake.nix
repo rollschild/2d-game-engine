@@ -66,7 +66,7 @@
               # llvm.libcxx
             ];
 
-            CXXFLAGS = "-Wall -std=c++20";
+            CXXFLAGS = "-Wall -std=c++23";
             LDFLAGS = "-lSDL2 -lSDL2_image -lSDL2_gfx -lSDL2_ttf -lSDL2_mixer -llua -lm";
             # CPATH = builtins.concatStringsSep ":" [
             # (lib.makeSearchPathOutput "dev" "include" [ llvm.libcxx ])

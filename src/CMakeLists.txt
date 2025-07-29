@@ -10,4 +10,4 @@ find_library(LUA_LIBRARY lua)
 target_link_libraries(main PRIVATE SDL2::SDL2 ${LUA_LIBRARY} sol2::sol2
                                    imgui::imgui)
 
-target_sources(main PRIVATE main.cpp game.cpp)
+target_sources(main PRIVATE main.cpp game.cpp logger.cpp)
