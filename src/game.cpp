@@ -6,6 +6,7 @@
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 #include <glm/ext/vector_float2.hpp>
 #include <glm/glm.hpp>
@@ -78,12 +79,28 @@ glm::vec2 player_velocity;
 
 void Game::setup() {
     player_position = glm::vec2(100.0, 200.0);
-    player_velocity = glm::vec2(0.050, 0.0);
+    player_velocity = glm::vec2(50.0, 25.0);
 }
 
 void Game::update() {
-    player_position.x += player_velocity.x;
-    player_position.y += player_velocity.y;
+    // If too fast, wait some time until we reach MILLISECS_PER_FRAME
+    // Not effcient!
+    /*
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(),
+                             millisecs_previous_frame + MILLISECS_PER_FRAME))
+        ;
+    */
+    int time_to_wait =
+        MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecs_previous_frame);
+    if (time_to_wait > 0 && time_to_wait <= MILLISECS_PER_FRAME) {
+        SDL_Delay(time_to_wait);
+    }
+
+    // converted to seconds
+    double delta_time = (SDL_GetTicks() - millisecs_previous_frame) / 1000.0;
+    millisecs_previous_frame = SDL_GetTicks();
+    player_position.x += player_velocity.x * delta_time;
+    player_position.y += player_velocity.y * delta_time;
 }
 
 void Game::run() {

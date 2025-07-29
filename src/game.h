@@ -3,10 +3,16 @@
 
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
+
+#define FPS 60
+#define MILLISECS_PER_FRAME (1000 / FPS)
+
 class Game {
   private:
     SDL_Window *window;
     SDL_Renderer *renderer;
+
+    int millisecs_previous_frame = 0;
 
     bool is_running;
 
