@@ -26,7 +26,7 @@ if(MSVC)
   add_compile_options(/W4)
 else()
   # additional warnings
-  add_compile_options(-Wall -Wextra -Werror -g -O1)
+  add_compile_options(-Wall -Wfatal-errors -Wextra -Werror -g -O1)
 endif()
 
 if(APPLE)
