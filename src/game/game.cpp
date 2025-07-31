@@ -1,5 +1,5 @@
 #include "game.h"
-#include "../logger/logger.h"
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
@@ -9,9 +9,13 @@
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
+
 #include <glm/ext/vector_float2.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
+
+#include "../ecs/ecs.h"
+#include "../logger/logger.h"
 
 Game::Game() : is_running(false) { Logger::log("Game constructor called!"); }
 
@@ -61,24 +65,28 @@ void Game::process_input() {
     SDL_Event sdl_event;
     while (SDL_PollEvent(&sdl_event)) {
         switch (sdl_event.type) {
-        case SDL_QUIT:
-            is_running = false;
-            break;
-        case SDL_KEYDOWN:
-            if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
+            case SDL_QUIT:
                 is_running = false;
-            }
-            break;
+                break;
+            case SDL_KEYDOWN:
+                if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
+                    is_running = false;
+                }
+                break;
         }
     }
 }
 
-glm::vec2 player_position;
-glm::vec2 player_velocity;
+// glm::vec2 player_position;
+// glm::vec2 player_velocity;
 
 void Game::setup() {
-    player_position = glm::vec2(100.0, 200.0);
-    player_velocity = glm::vec2(50.0, 25.0);
+    // TODO
+    // Entity tank = registry.create_entity();
+    // tank.add_component<TransformComponent>();
+    // tank.add_component<TransformComponent>();
+    // player_position = glm::vec2(100.0, 200.0);
+    // player_velocity = glm::vec2(50.0, 25.0);
 }
 
 void Game::update() {
@@ -96,10 +104,14 @@ void Game::update() {
     }
 
     // converted to seconds
-    double delta_time = (SDL_GetTicks() - millisecs_previous_frame) / 1000.0;
-    millisecs_previous_frame = SDL_GetTicks();
-    player_position.x += player_velocity.x * delta_time;
-    player_position.y += player_velocity.y * delta_time;
+    // double delta_time = (SDL_GetTicks() - millisecs_previous_frame) / 1000.0;
+    // millisecs_previous_frame = SDL_GetTicks();
+    // TODO
+    //  MovementSystem.update();
+    //  CollisionSystem.update();
+    //  DamageSystem.update();
+    //  player_position.x += player_velocity.x * delta_time;
+    //  player_position.y += player_velocity.y * delta_time;
 }
 
 void Game::run() {
@@ -120,10 +132,11 @@ void Game::render() {
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 
+    // TODO
     // copy texture to the destination renderer
-    SDL_Rect dst_rect = {static_cast<int>(player_position.x),
-                         static_cast<int>(player_position.y), 32, 32};
-    SDL_RenderCopy(renderer, texture, nullptr, &dst_rect);
+    // SDL_Rect dst_rect = {static_cast<int>(player_position.x),
+    // static_cast<int>(player_position.y), 32, 32};
+    // SDL_RenderCopy(renderer, texture, nullptr, &dst_rect);
     SDL_DestroyTexture(texture);
 
     // double buffers
