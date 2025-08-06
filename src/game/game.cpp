@@ -16,9 +16,12 @@
 #include <memory>
 
 #include "../components/rigid_body_component.h"
+#include "../components/sprite_component.h"
 #include "../components/transform_component.h"
 #include "../ecs/ecs.h"
 #include "../logger/logger.h"
+#include "../systems/movement_system.h"
+#include "../systems/render_system.h"
 
 Game::Game() : is_running(false) {
     registry = std::make_unique<Registry>();
@@ -87,9 +90,10 @@ void Game::process_input() {
 // glm::vec2 player_velocity;
 
 void Game::setup() {
+    registry->add_system<MovementSystem>();
+    registry->add_system<RenderSystem>();
     // Create some entities
     Entity tank = registry->create_entity();
-    // Entity truck = registry->create_entity();
 
     // registry->add_component<TransformComponent>(tank, glm::vec2(10.0, 30.0),
     // glm::vec2(1.0, 1.0), 0.0);
@@ -98,6 +102,13 @@ void Game::setup() {
     tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0),
                                            glm::vec2(1.0, 1.0), 0.0);
     tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 10.0));
+    tank.add_component<SpriteComponent>(10, 10);
+
+    Entity truck = registry->create_entity();
+    truck.add_component<TransformComponent>(glm::vec2(50.0, 100.0),
+                                            glm::vec2(1.0, 1.0), 0.0);
+    truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 50.0));
+    truck.add_component<SpriteComponent>(10, 50);
 
     // Entity tank = registry.create_entity();
     // tank.add_component<TransformComponent>();
@@ -121,12 +132,16 @@ void Game::update() {
     }
 
     // converted to seconds
-    // double delta_time = (SDL_GetTicks() - millisecs_previous_frame) / 1000.0;
-    // millisecs_previous_frame = SDL_GetTicks();
-    // TODO
-    //  MovementSystem.update();
-    //  CollisionSystem.update();
-    //  DamageSystem.update();
+    double delta_time = (SDL_GetTicks() - millisecs_previous_frame) / 1000.0;
+    millisecs_previous_frame = SDL_GetTicks();
+
+    // update registry to process the entities that waiting to be
+    // created/deleted
+    registry->update();
+
+    // Invoke all systems that need to update
+    registry->get_system<MovementSystem>().update(delta_time);
+
     //  player_position.x += player_velocity.x * delta_time;
     //  player_position.y += player_velocity.y * delta_time;
 }
@@ -143,6 +158,8 @@ void Game::run() {
 void Game::render() {
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
+
+    registry->get_system<RenderSystem>().update(renderer);
 
     // draw a PNG texture
     SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");
