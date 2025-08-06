@@ -8,7 +8,7 @@
 
 #include "../logger/logger.h"
 
-int IComponent::next_id = 0;
+unsigned IComponent::next_id = 0;
 
 int Entity::get_id() const { return id; }
 
@@ -27,6 +27,8 @@ void Registry::add_entity_to_systems(Entity entity) {
         }
     }
 }
+
+void System::add_entity_to_system(Entity ent) { entities.push_back(ent); }
 
 void System::remove_entity_from_system(Entity entity) {
     // Old syntax
@@ -57,14 +59,24 @@ const Signature& System::get_component_signature() const {
 }
 
 Entity Registry::create_entity() {
-    int entity_id = num_entities++;
+    unsigned entity_id = num_entities++;
     Entity entity(entity_id);
+    entity.registry = this;
     entities_to_be_added.insert(entity);
+
+    // make sure the entity_component_sigs vector can handle the new entity
+    if (entity_id >= entity_component_sigs.size()) {
+        entity_component_sigs.resize(entity_id + 1);
+    }
 
     Logger::log("Entity created with id = " + std::to_string(entity_id));
     return entity;
 }
 
 void Registry::update() {
-    // TODO
+    // Add entities waiting to be added to the active systems
+    for (auto entity : entities_to_be_added) {
+        add_entity_to_systems(entity);
+    }
+    entities_to_be_added.clear();
 }

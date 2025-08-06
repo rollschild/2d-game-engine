@@ -13,11 +13,17 @@
 #include <glm/ext/vector_float2.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
+#include <memory>
 
+#include "../components/rigid_body_component.h"
+#include "../components/transform_component.h"
 #include "../ecs/ecs.h"
 #include "../logger/logger.h"
 
-Game::Game() : is_running(false) { Logger::log("Game constructor called!"); }
+Game::Game() : is_running(false) {
+    registry = std::make_unique<Registry>();
+    Logger::log("Game constructor called!");
+}
 
 Game::~Game() { Logger::log("Game destructor called!"); }
 
@@ -81,7 +87,18 @@ void Game::process_input() {
 // glm::vec2 player_velocity;
 
 void Game::setup() {
-    // TODO
+    // Create some entities
+    Entity tank = registry->create_entity();
+    // Entity truck = registry->create_entity();
+
+    // registry->add_component<TransformComponent>(tank, glm::vec2(10.0, 30.0),
+    // glm::vec2(1.0, 1.0), 0.0);
+    // registry->add_component<RigidBodyComponent>(tank, glm::vec2(50.0, 10.0));
+
+    tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0),
+                                           glm::vec2(1.0, 1.0), 0.0);
+    tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 10.0));
+
     // Entity tank = registry.create_entity();
     // tank.add_component<TransformComponent>();
     // tank.add_component<TransformComponent>();

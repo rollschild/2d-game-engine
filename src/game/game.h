@@ -4,19 +4,25 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
+#include <memory>
+
+#include "../ecs/ecs.h"
+
 #define FPS 60
 #define MILLISECS_PER_FRAME (1000 / FPS)
 
 class Game {
-  private:
-    SDL_Window *window;
-    SDL_Renderer *renderer;
-
+   private:
     int millisecs_previous_frame = 0;
 
     bool is_running;
 
-  public:
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+
+    std::unique_ptr<Registry> registry;
+
+   public:
     Game();
     ~Game();
 
