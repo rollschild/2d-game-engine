@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "../asset_store/asset_store.h"
 #include "../ecs/ecs.h"
 
 #define FPS 60
@@ -21,6 +22,7 @@ class Game {
     SDL_Renderer *renderer;
 
     std::unique_ptr<Registry> registry;
+    std::unique_ptr<AssetStore> asset_store;
 
    public:
     Game();

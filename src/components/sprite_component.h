@@ -1,14 +1,22 @@
 #ifndef INCLUDED_SPRITE_COMPONENT_H
 #define INCLUDED_SPRITE_COMPONENT_H
 
+#include <SDL2/SDL_rect.h>
+
 #include <glm/glm.hpp>
+#include <string>
 
 struct SpriteComponent {
+    std::string asset_id;
     int width;
     int height;
+    SDL_Rect src_rect;
 
-    SpriteComponent(int width = 0, int height = 0)
-        : width(width), height(height) {}
+    SpriteComponent(std::string asset_id = "", int width = 0, int height = 0,
+                    int src_rect_x = 0, int src_rect_y = 0)
+        : asset_id(asset_id), width(width), height(height) {
+        this->src_rect = {src_rect_x, src_rect_y, width, height};
+    }
 };
 
 #endif

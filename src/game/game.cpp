@@ -25,6 +25,7 @@
 
 Game::Game() : is_running(false) {
     registry = std::make_unique<Registry>();
+    asset_store = std::make_unique<AssetStore>();
     Logger::log("Game constructor called!");
 }
 
@@ -92,6 +93,13 @@ void Game::process_input() {
 void Game::setup() {
     registry->add_system<MovementSystem>();
     registry->add_system<RenderSystem>();
+
+    // Add assets
+    asset_store->add_texture(renderer, "tank-image",
+                             "./assets/images/tank-tiger-right.png");
+    asset_store->add_texture(renderer, "truck-image",
+                             "./assets/images/truck-ford-right.png");
+
     // Create some entities
     Entity tank = registry->create_entity();
 
@@ -102,13 +110,13 @@ void Game::setup() {
     tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0),
                                            glm::vec2(1.0, 1.0), 0.0);
     tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 10.0));
-    tank.add_component<SpriteComponent>(10, 10);
+    tank.add_component<SpriteComponent>("tank-image", 32, 32);
 
     Entity truck = registry->create_entity();
     truck.add_component<TransformComponent>(glm::vec2(50.0, 100.0),
                                             glm::vec2(1.0, 1.0), 0.0);
     truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 50.0));
-    truck.add_component<SpriteComponent>(10, 50);
+    truck.add_component<SpriteComponent>("truck-image", 32, 32);
 
     // Entity tank = registry.create_entity();
     // tank.add_component<TransformComponent>();
@@ -159,7 +167,7 @@ void Game::render() {
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
-    registry->get_system<RenderSystem>().update(renderer);
+    registry->get_system<RenderSystem>().update(renderer, asset_store);
 
     // draw a PNG texture
     SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");

@@ -11,4 +11,4 @@ target_link_libraries(main PRIVATE SDL2::SDL2 ${LUA_LIBRARY} sol2::sol2
                                    imgui::imgui)
 
 target_sources(main PRIVATE main.cpp game/game.cpp logger/logger.cpp
-                            ecs/ecs.cpp)
+                            ecs/ecs.cpp asset_store/asset_store.cpp)
