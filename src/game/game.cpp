@@ -18,11 +18,13 @@
 #include <memory>
 #include <string>
 
+#include "../components/animation_component.h"
 #include "../components/rigid_body_component.h"
 #include "../components/sprite_component.h"
 #include "../components/transform_component.h"
 #include "../ecs/ecs.h"
 #include "../logger/logger.h"
+#include "../systems/animation_system.h"
 #include "../systems/movement_system.h"
 #include "../systems/render_system.h"
 
@@ -96,6 +98,7 @@ void Game::process_input() {
 void Game::load_level(/*int level*/) {
     registry->add_system<MovementSystem>();
     registry->add_system<RenderSystem>();
+    registry->add_system<AnimationSystem>();
 
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
@@ -104,6 +107,10 @@ void Game::load_level(/*int level*/) {
                              "./assets/images/truck-ford-right.png");
     asset_store->add_texture(renderer, "tilemap-image",
                              "./assets/tilemaps/jungle.png");
+    asset_store->add_texture(renderer, "chopper-image",
+                             "./assets/images/chopper.png");
+    asset_store->add_texture(renderer, "radar-image",
+                             "./assets/images/radar.png");
 
     // Load tilemap
     int tile_size = 32;
@@ -132,6 +139,20 @@ void Game::load_level(/*int level*/) {
         }
     }
     map_file.close();
+
+    Entity chopper = registry->create_entity();
+    chopper.add_component<TransformComponent>(glm::vec2(100.0, 100.0),
+                                              glm::vec2(1.0, 1.0), 0.0);
+    chopper.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
+    chopper.add_component<SpriteComponent>("chopper-image", 32, 32, 1);
+    chopper.add_component<AnimationComponent>(2, 10, true);
+
+    Entity radar = registry->create_entity();
+    radar.add_component<TransformComponent>(glm::vec2(window_width - 74, 10.0),
+                                            glm::vec2(1.0, 1.0), 0.0);
+    radar.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
+    radar.add_component<SpriteComponent>("radar-image", 64, 64, 2);
+    radar.add_component<AnimationComponent>(8, 5, true);
 
     // Create some entities
     Entity tank = registry->create_entity();
@@ -184,6 +205,7 @@ void Game::update() {
 
     // Invoke all systems that need to update
     registry->get_system<MovementSystem>().update(delta_time);
+    registry->get_system<AnimationSystem>().update();
 
     //  player_position.x += player_velocity.x * delta_time;
     //  player_position.y += player_velocity.y * delta_time;
