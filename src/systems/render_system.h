@@ -4,8 +4,10 @@
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "../asset_store/asset_store.h"
 #include "../components/sprite_component.h"
@@ -21,9 +23,27 @@ class RenderSystem : public System {
 
     void update(SDL_Renderer* renderer,
                 std::unique_ptr<AssetStore>& asset_store) {
+        // Sort all entities in the system by z-index
+        struct RenderableEntity {
+            TransformComponent transform_component;
+            SpriteComponent sprite_component;
+        };
+        std::vector<RenderableEntity> renderable_entities;
         for (auto entity : get_system_entities()) {
-            const auto transform = entity.get_component<TransformComponent>();
-            const auto sprite = entity.get_component<SpriteComponent>();
+            RenderableEntity re;
+            re.sprite_component = entity.get_component<SpriteComponent>();
+            re.transform_component = entity.get_component<TransformComponent>();
+            renderable_entities.emplace_back(re);
+        }
+        std::sort(renderable_entities.begin(), renderable_entities.end(),
+                  [](const RenderableEntity& a, const RenderableEntity& b) {
+                      return a.sprite_component.z_index <
+                             b.sprite_component.z_index;
+                  });
+
+        for (auto entity : renderable_entities) {
+            const auto transform = entity.transform_component;
+            const auto sprite = entity.sprite_component;
 
             SDL_Rect src_rect = sprite.src_rect;
             SDL_Rect dst_rect = {

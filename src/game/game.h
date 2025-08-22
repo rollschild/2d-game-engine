@@ -30,6 +30,7 @@ class Game {
 
     void initialize();
     void run();
+    void load_level(/*int level*/);
     void setup();
     void process_input();
     void update();

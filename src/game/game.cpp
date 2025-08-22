@@ -10,10 +10,13 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 
+#include <cstdlib>
+#include <fstream>
 #include <glm/ext/vector_float2.hpp>
 #include <glm/glm.hpp>
 #include <iostream>
 #include <memory>
+#include <string>
 
 #include "../components/rigid_body_component.h"
 #include "../components/sprite_component.h"
@@ -90,7 +93,7 @@ void Game::process_input() {
 // glm::vec2 player_position;
 // glm::vec2 player_velocity;
 
-void Game::setup() {
+void Game::load_level(/*int level*/) {
     registry->add_system<MovementSystem>();
     registry->add_system<RenderSystem>();
 
@@ -99,6 +102,36 @@ void Game::setup() {
                              "./assets/images/tank-tiger-right.png");
     asset_store->add_texture(renderer, "truck-image",
                              "./assets/images/truck-ford-right.png");
+    asset_store->add_texture(renderer, "tilemap-image",
+                             "./assets/tilemaps/jungle.png");
+
+    // Load tilemap
+    int tile_size = 32;
+    double tile_scale = 3.0;
+    int num_cols = 25;
+    int num_rows = 20;
+    std::fstream map_file;
+    map_file.open("./assets/tilemaps/jungle.map");
+    for (int y = 0; y < num_rows; y++) {
+        for (int x = 0; x < num_cols; x++) {
+            char ch;
+            map_file.get(ch);
+            int src_rect_y = std::atoi(&ch) * tile_size;
+            map_file.get(ch);
+            int src_rect_x = std::atoi(&ch) * tile_size;
+            map_file.ignore();  // skip comma
+
+            Entity tile = registry->create_entity();
+            tile.add_component<TransformComponent>(
+                glm::vec2(x * (tile_scale * tile_size),
+                          y * (tile_size * tile_scale)),
+                glm::vec2(tile_scale, tile_scale), 0.0);
+            tile.add_component<SpriteComponent>("tilemap-image", tile_size,
+                                                tile_size, 0, src_rect_x,
+                                                src_rect_y);
+        }
+    }
+    map_file.close();
 
     // Create some entities
     Entity tank = registry->create_entity();
@@ -110,13 +143,13 @@ void Game::setup() {
     tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0),
                                            glm::vec2(1.0, 1.0), 0.0);
     tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 10.0));
-    tank.add_component<SpriteComponent>("tank-image", 32, 32);
+    tank.add_component<SpriteComponent>("tank-image", 32, 32, 2);
 
     Entity truck = registry->create_entity();
     truck.add_component<TransformComponent>(glm::vec2(50.0, 100.0),
                                             glm::vec2(1.0, 1.0), 0.0);
     truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 50.0));
-    truck.add_component<SpriteComponent>("truck-image", 32, 32);
+    truck.add_component<SpriteComponent>("truck-image", 32, 32, 1);
 
     // Entity tank = registry.create_entity();
     // tank.add_component<TransformComponent>();
@@ -124,6 +157,8 @@ void Game::setup() {
     // player_position = glm::vec2(100.0, 200.0);
     // player_velocity = glm::vec2(50.0, 25.0);
 }
+
+void Game::setup() { load_level(); }
 
 void Game::update() {
     // If too fast, wait some time until we reach MILLISECS_PER_FRAME
