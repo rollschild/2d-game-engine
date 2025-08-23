@@ -17,6 +17,7 @@ class Game {
     int millisecs_previous_frame = 0;
 
     bool is_running;
+    bool is_debug;
 
     SDL_Window *window;
     SDL_Renderer *renderer;

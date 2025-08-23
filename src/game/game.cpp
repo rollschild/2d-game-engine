@@ -19,16 +19,19 @@
 #include <string>
 
 #include "../components/animation_component.h"
+#include "../components/box_collider_component.h"
 #include "../components/rigid_body_component.h"
 #include "../components/sprite_component.h"
 #include "../components/transform_component.h"
 #include "../ecs/ecs.h"
 #include "../logger/logger.h"
 #include "../systems/animation_system.h"
+#include "../systems/collision_system.h"
 #include "../systems/movement_system.h"
+#include "../systems/render_collider_system.h"
 #include "../systems/render_system.h"
 
-Game::Game() : is_running(false) {
+Game::Game() : is_running(false), is_debug(false) {
     registry = std::make_unique<Registry>();
     asset_store = std::make_unique<AssetStore>();
     Logger::log("Game constructor called!");
@@ -87,6 +90,9 @@ void Game::process_input() {
                 if (sdl_event.key.keysym.sym == SDLK_ESCAPE) {
                     is_running = false;
                 }
+                if (sdl_event.key.keysym.sym == SDLK_d) {
+                    is_debug = !is_debug;
+                }
                 break;
         }
     }
@@ -99,6 +105,8 @@ void Game::load_level(/*int level*/) {
     registry->add_system<MovementSystem>();
     registry->add_system<RenderSystem>();
     registry->add_system<AnimationSystem>();
+    registry->add_system<CollisionSystem>();
+    registry->add_system<RenderColliderSystem>();
 
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
@@ -161,16 +169,18 @@ void Game::load_level(/*int level*/) {
     // glm::vec2(1.0, 1.0), 0.0);
     // registry->add_component<RigidBodyComponent>(tank, glm::vec2(50.0, 10.0));
 
-    tank.add_component<TransformComponent>(glm::vec2(10.0, 30.0),
+    tank.add_component<TransformComponent>(glm::vec2(500.0, 10.0),
                                            glm::vec2(1.0, 1.0), 0.0);
-    tank.add_component<RigidBodyComponent>(glm::vec2(50.0, 10.0));
+    tank.add_component<RigidBodyComponent>(glm::vec2(-50.0, 0.0));
     tank.add_component<SpriteComponent>("tank-image", 32, 32, 2);
+    tank.add_component<BoxColliderComponent>(32, 32);
 
     Entity truck = registry->create_entity();
-    truck.add_component<TransformComponent>(glm::vec2(50.0, 100.0),
+    truck.add_component<TransformComponent>(glm::vec2(10.0, 10.0),
                                             glm::vec2(1.0, 1.0), 0.0);
-    truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 50.0));
+    truck.add_component<RigidBodyComponent>(glm::vec2(30.0, 00.0));
     truck.add_component<SpriteComponent>("truck-image", 32, 32, 1);
+    truck.add_component<BoxColliderComponent>(32, 32);
 
     // Entity tank = registry.create_entity();
     // tank.add_component<TransformComponent>();
@@ -206,6 +216,7 @@ void Game::update() {
     // Invoke all systems that need to update
     registry->get_system<MovementSystem>().update(delta_time);
     registry->get_system<AnimationSystem>().update();
+    registry->get_system<CollisionSystem>().update();
 
     //  player_position.x += player_velocity.x * delta_time;
     //  player_position.y += player_velocity.y * delta_time;
@@ -225,6 +236,9 @@ void Game::render() {
     SDL_RenderClear(renderer);
 
     registry->get_system<RenderSystem>().update(renderer, asset_store);
+    if (is_debug) {
+        registry->get_system<RenderColliderSystem>().update(renderer);
+    }
 
     // draw a PNG texture
     SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");
