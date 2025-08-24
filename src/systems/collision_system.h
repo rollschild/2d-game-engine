@@ -39,6 +39,8 @@ class CollisionSystem : public System {
                     Logger::log("Entity " + std::to_string(a.get_id()) +
                                 " is colliding with entity " +
                                 std::to_string(b.get_id()) + "!");
+                    a.kill();
+                    b.kill();
                 }
             }
         }

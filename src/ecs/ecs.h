@@ -2,6 +2,7 @@
 #define INCLUDED_ECS_H
 
 #include <bitset>
+#include <deque>
 #include <memory>
 #include <set>
 #include <string>
@@ -58,6 +59,7 @@ class Entity {
     class Registry* registry;
 
     int get_id() const;
+    void kill();
 
     bool operator==(const Entity& other) const { return id == other.id; }
     bool operator!=(const Entity& other) const { return id != other.id; }
@@ -158,6 +160,9 @@ class Registry {
 
     std::unordered_map<std::type_index, std::shared_ptr<System>> systems;
 
+    // list of free entity IDs that were previously removed
+    std::deque<unsigned> free_ids;
+
    public:
     Registry() = default;
     Entity create_entity();
@@ -188,6 +193,7 @@ class Registry {
     TSystem& get_system() const;
 
     void add_entity_to_systems(Entity ent);
+    void remove_entity_from_systems(Entity ent);
 };
 
 template <typename TSystem, typename... TArgs>

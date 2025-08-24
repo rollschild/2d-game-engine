@@ -182,6 +182,8 @@ void Game::load_level(/*int level*/) {
     truck.add_component<SpriteComponent>("truck-image", 32, 32, 1);
     truck.add_component<BoxColliderComponent>(32, 32);
 
+    // tank.kill();
+
     // Entity tank = registry.create_entity();
     // tank.add_component<TransformComponent>();
     // tank.add_component<TransformComponent>();
