@@ -20,6 +20,7 @@
 
 #include "../components/animation_component.h"
 #include "../components/box_collider_component.h"
+#include "../components/keyboard_controlled_component.h"
 #include "../components/rigid_body_component.h"
 #include "../components/sprite_component.h"
 #include "../components/transform_component.h"
@@ -123,7 +124,7 @@ void Game::load_level(/*int level*/) {
     asset_store->add_texture(renderer, "tilemap-image",
                              "./assets/tilemaps/jungle.png");
     asset_store->add_texture(renderer, "chopper-image",
-                             "./assets/images/chopper.png");
+                             "./assets/images/chopper-spritesheet.png");
     asset_store->add_texture(renderer, "radar-image",
                              "./assets/images/radar.png");
 
@@ -161,6 +162,9 @@ void Game::load_level(/*int level*/) {
     chopper.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
     chopper.add_component<SpriteComponent>("chopper-image", 32, 32, 1);
     chopper.add_component<AnimationComponent>(2, 10, true);
+    chopper.add_component<KeyboardControlledComponent>(
+        glm::vec2(0, -80), glm::vec2(80, 0), glm::vec2(0, 80),
+        glm::vec2(-80, 0));
 
     Entity radar = registry->create_entity();
     radar.add_component<TransformComponent>(glm::vec2(window_width - 74, 10.0),
