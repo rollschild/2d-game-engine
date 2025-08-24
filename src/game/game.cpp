@@ -27,6 +27,8 @@
 #include "../logger/logger.h"
 #include "../systems/animation_system.h"
 #include "../systems/collision_system.h"
+#include "../systems/damage_system.h"
+#include "../systems/keyboard_control_system.h"
 #include "../systems/movement_system.h"
 #include "../systems/render_collider_system.h"
 #include "../systems/render_system.h"
@@ -34,6 +36,7 @@
 Game::Game() : is_running(false), is_debug(false) {
     registry = std::make_unique<Registry>();
     asset_store = std::make_unique<AssetStore>();
+    event_bus = std::make_unique<EventBus>();
     Logger::log("Game constructor called!");
 }
 
@@ -93,6 +96,8 @@ void Game::process_input() {
                 if (sdl_event.key.keysym.sym == SDLK_d) {
                     is_debug = !is_debug;
                 }
+                event_bus->emit_event<KeyPressedEvent>(
+                    sdl_event.key.keysym.sym);
                 break;
         }
     }
@@ -107,6 +112,8 @@ void Game::load_level(/*int level*/) {
     registry->add_system<AnimationSystem>();
     registry->add_system<CollisionSystem>();
     registry->add_system<RenderColliderSystem>();
+    registry->add_system<DamageSystem>();
+    registry->add_system<KeyboardControlSystem>();
 
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
@@ -211,6 +218,15 @@ void Game::update() {
     double delta_time = (SDL_GetTicks() - millisecs_previous_frame) / 1000.0;
     millisecs_previous_frame = SDL_GetTicks();
 
+    // Reset all event handlers for the current frame
+    event_bus->reset();
+
+    // Perform subscription of events for all systems
+    // the subscription is _PER FRAME_
+    registry->get_system<DamageSystem>().subscribe_to_events(event_bus);
+    registry->get_system<KeyboardControlSystem>().subscribe_to_events(
+        event_bus);
+
     // update registry to process the entities that waiting to be
     // created/deleted
     registry->update();
@@ -218,7 +234,7 @@ void Game::update() {
     // Invoke all systems that need to update
     registry->get_system<MovementSystem>().update(delta_time);
     registry->get_system<AnimationSystem>().update();
-    registry->get_system<CollisionSystem>().update();
+    registry->get_system<CollisionSystem>().update(event_bus);
 
     //  player_position.x += player_velocity.x * delta_time;
     //  player_position.y += player_velocity.y * delta_time;

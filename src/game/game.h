@@ -8,6 +8,7 @@
 
 #include "../asset_store/asset_store.h"
 #include "../ecs/ecs.h"
+#include "../event_bus/event_bus.h"
 
 #define FPS 60
 #define MILLISECS_PER_FRAME (1000 / FPS)
@@ -24,6 +25,7 @@ class Game {
 
     std::unique_ptr<Registry> registry;
     std::unique_ptr<AssetStore> asset_store;
+    std::unique_ptr<EventBus> event_bus;
 
    public:
     Game();

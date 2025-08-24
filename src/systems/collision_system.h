@@ -1,11 +1,14 @@
 #ifndef INCLUDED_COLLISION_SYSTEM_H
 #define INCLUDED_COLLISION_SYSTEM_H
 
+#include <memory>
 #include <string>
 
 #include "../components/box_collider_component.h"
 #include "../components/transform_component.h"
 #include "../ecs/ecs.h"
+#include "../event_bus/event_bus.h"
+#include "../events/collision_event.h"
 
 class CollisionSystem : public System {
    public:
@@ -14,7 +17,7 @@ class CollisionSystem : public System {
         require_component<BoxColliderComponent>();
     }
 
-    void update() {
+    void update(std::unique_ptr<EventBus>& ebus) {
         // check all entities that have a box collider
         // see if they are colliding with each other
         auto entities = get_system_entities();
@@ -39,8 +42,9 @@ class CollisionSystem : public System {
                     Logger::log("Entity " + std::to_string(a.get_id()) +
                                 " is colliding with entity " +
                                 std::to_string(b.get_id()) + "!");
-                    a.kill();
-                    b.kill();
+                    // a.kill();
+                    // b.kill();
+                    ebus->emit_event<CollisionEvent>(a, b);
                 }
             }
         }
