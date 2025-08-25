@@ -22,6 +22,7 @@
 #include "../components/box_collider_component.h"
 #include "../components/camera_follow_component.h"
 #include "../components/keyboard_controlled_component.h"
+#include "../components/projectile_emitter_component.h"
 #include "../components/rigid_body_component.h"
 #include "../components/sprite_component.h"
 #include "../components/transform_component.h"
@@ -33,6 +34,7 @@
 #include "../systems/damage_system.h"
 #include "../systems/keyboard_control_system.h"
 #include "../systems/movement_system.h"
+#include "../systems/projectile_emit_system.h"
 #include "../systems/render_collider_system.h"
 #include "../systems/render_system.h"
 
@@ -129,6 +131,7 @@ void Game::load_level(/*int level*/) {
     registry->add_system<DamageSystem>();
     registry->add_system<KeyboardControlSystem>();
     registry->add_system<CameraMovementSystem>();
+    registry->add_system<ProjectileEmitSystem>();
 
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
@@ -141,6 +144,8 @@ void Game::load_level(/*int level*/) {
                              "./assets/images/chopper-spritesheet.png");
     asset_store->add_texture(renderer, "radar-image",
                              "./assets/images/radar.png");
+    asset_store->add_texture(renderer, "bullet-image",
+                             "./assets/images/bullet.png");
 
     // Load tilemap
     int tile_size = 32;
@@ -200,16 +205,20 @@ void Game::load_level(/*int level*/) {
 
     tank.add_component<TransformComponent>(glm::vec2(1200.0, 10.0),
                                            glm::vec2(1.0, 1.0), 0.0);
-    tank.add_component<RigidBodyComponent>(glm::vec2(-50.0, 0.0));
+    tank.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
     tank.add_component<SpriteComponent>("tank-image", 32, 32, 2, false);
     tank.add_component<BoxColliderComponent>(32, 32);
+    tank.add_component<ProjectileEmitterComponent>(glm::vec2(100.0, 0.0), 5000,
+                                                   10000, 0, false);
 
     Entity truck = registry->create_entity();
     truck.add_component<TransformComponent>(glm::vec2(10.0, 10.0),
                                             glm::vec2(1.0, 1.0), 0.0);
-    truck.add_component<RigidBodyComponent>(glm::vec2(30.0, 00.0));
+    truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));
     truck.add_component<SpriteComponent>("truck-image", 32, 32, 1, false);
     truck.add_component<BoxColliderComponent>(32, 32);
+    truck.add_component<ProjectileEmitterComponent>(glm::vec2(0.0, 100.0), 2000,
+                                                    10000, 0, false);
 
     // tank.kill();
 
@@ -258,6 +267,7 @@ void Game::update() {
     registry->get_system<AnimationSystem>().update();
     registry->get_system<CollisionSystem>().update(event_bus);
     registry->get_system<CameraMovementSystem>().update(camera);
+    registry->get_system<ProjectileEmitSystem>().update(registry);
 
     //  player_position.x += player_velocity.x * delta_time;
     //  player_position.y += player_velocity.y * delta_time;

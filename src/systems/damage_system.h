@@ -23,8 +23,8 @@ class DamageSystem : public System {
             "Damage system received an event collision between entities " +
             std::to_string(e.a.get_id()) + " and " +
             std::to_string(e.b.get_id()));
-        e.a.kill();
-        e.b.kill();
+        // e.a.kill();
+        // e.b.kill();
     }
 
     void update() {}
