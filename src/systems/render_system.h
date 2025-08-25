@@ -22,7 +22,7 @@ class RenderSystem : public System {
     }
 
     void update(SDL_Renderer* renderer,
-                std::unique_ptr<AssetStore>& asset_store) {
+                std::unique_ptr<AssetStore>& asset_store, SDL_Rect& camera) {
         // Sort all entities in the system by z-index
         struct RenderableEntity {
             TransformComponent transform_component;
@@ -47,8 +47,10 @@ class RenderSystem : public System {
 
             SDL_Rect src_rect = sprite.src_rect;
             SDL_Rect dst_rect = {
-                static_cast<int>(transform.position.x),
-                static_cast<int>(transform.position.y),
+                static_cast<int>(transform.position.x -
+                                 (sprite.is_fixed ? 0 : camera.x)),
+                static_cast<int>(transform.position.y -
+                                 (sprite.is_fixed ? 0 : camera.y)),
                 static_cast<int>(sprite.width * transform.scale.x),
                 static_cast<int>(sprite.height * transform.scale.y),
             };

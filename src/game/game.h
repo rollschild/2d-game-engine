@@ -1,6 +1,7 @@
 #ifndef INCLUDED_GAME_H
 #define INCLUDED_GAME_H
 
+#include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 
@@ -22,6 +23,7 @@ class Game {
 
     SDL_Window *window;
     SDL_Renderer *renderer;
+    SDL_Rect camera;
 
     std::unique_ptr<Registry> registry;
     std::unique_ptr<AssetStore> asset_store;
@@ -40,8 +42,10 @@ class Game {
     void render();
     void destroy();
 
-    int window_width;
-    int window_height;
+    static int window_width;
+    static int window_height;
+    static int map_width;
+    static int map_height;
 };
 
 #endif
