@@ -167,6 +167,7 @@ void Game::load_level(/*int level*/) {
             map_file.ignore();  // skip comma
 
             Entity tile = registry->create_entity();
+            tile.group("tiles");
             tile.add_component<TransformComponent>(
                 glm::vec2(x * (tile_scale * tile_size),
                           y * (tile_size * tile_scale)),
@@ -182,6 +183,7 @@ void Game::load_level(/*int level*/) {
     map_height = num_rows * tile_size * tile_scale;
 
     Entity chopper = registry->create_entity();
+    chopper.tag("player");
     chopper.add_component<TransformComponent>(glm::vec2(100.0, 100.0),
                                               glm::vec2(1.0, 1.0), 0.0);
     chopper.add_component<RigidBodyComponent>(glm::vec2(0.0, 0.0));
@@ -204,6 +206,7 @@ void Game::load_level(/*int level*/) {
 
     // Create some entities
     Entity tank = registry->create_entity();
+    tank.group("enemies");
 
     // registry->add_component<TransformComponent>(tank, glm::vec2(10.0, 30.0),
     // glm::vec2(1.0, 1.0), 0.0);
@@ -219,6 +222,7 @@ void Game::load_level(/*int level*/) {
     tank.add_component<HealthComponent>(100);
 
     Entity truck = registry->create_entity();
+    truck.group("enemies");
     truck.add_component<TransformComponent>(glm::vec2(10.0, 10.0),
                                             glm::vec2(1.0, 1.0), 0.0);
     truck.add_component<RigidBodyComponent>(glm::vec2(0.0, 00.0));

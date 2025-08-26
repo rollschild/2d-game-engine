@@ -61,6 +61,11 @@ class Entity {
     int get_id() const;
     void kill();
 
+    void tag(const std::string& tag);
+    bool has_tag(const std::string& tag) const;
+    void group(const std::string& group);
+    bool in_group(const std::string& group) const;
+
     bool operator==(const Entity& other) const { return id == other.id; }
     bool operator!=(const Entity& other) const { return id != other.id; }
     bool operator>(const Entity& other) const { return id > other.id; }
@@ -145,6 +150,7 @@ class Pool : public IPool {
 class Registry {
    private:
     unsigned int num_entities = 0;
+
     std::set<Entity> entities_to_be_added;
     std::set<Entity> entities_to_be_killed;
 
@@ -162,6 +168,12 @@ class Registry {
 
     // list of free entity IDs that were previously removed
     std::deque<unsigned> free_ids;
+
+    std::unordered_map<std::string, Entity> tag_entity_map;
+    std::unordered_map<int, std::string> entity_tag_map;
+
+    std::unordered_map<std::string, std::set<Entity>> group_entities_map;
+    std::unordered_map<int, std::string> entity_group_map;
 
    public:
     Registry() = default;
@@ -194,6 +206,16 @@ class Registry {
 
     void add_entity_to_systems(Entity ent);
     void remove_entity_from_systems(Entity ent);
+
+    void tag_entity(Entity ent, const std::string& tag);
+    bool entity_has_tag(Entity ent, const std::string& tag) const;
+    Entity get_entity_by_tag(const std::string& tag) const;
+    void remove_entity_tag(Entity ent);
+
+    void group_entity(Entity ent, const std::string& group);
+    bool entity_in_group(Entity ent, const std::string& group) const;
+    std::vector<Entity> get_entities_by_group(const std::string& group) const;
+    void remove_entity_group(Entity ent);
 };
 
 template <typename TSystem, typename... TArgs>
