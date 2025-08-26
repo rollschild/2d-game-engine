@@ -36,6 +36,7 @@
 #include "../systems/keyboard_control_system.h"
 #include "../systems/movement_system.h"
 #include "../systems/projectile_emit_system.h"
+#include "../systems/projectile_lifecycle_system.h"
 #include "../systems/render_collider_system.h"
 #include "../systems/render_system.h"
 
@@ -133,6 +134,7 @@ void Game::load_level(/*int level*/) {
     registry->add_system<KeyboardControlSystem>();
     registry->add_system<CameraMovementSystem>();
     registry->add_system<ProjectileEmitSystem>();
+    registry->add_system<ProjectileLifecycleSystem>();
 
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
@@ -190,6 +192,8 @@ void Game::load_level(/*int level*/) {
         glm::vec2(-80, 0));
     chopper.add_component<CameraFollowComponent>();
     chopper.add_component<HealthComponent>(100);
+    chopper.add_component<ProjectileEmitterComponent>(glm::vec2(150.0, 150.0),
+                                                      0, 10000, 0, true);
 
     Entity radar = registry->create_entity();
     radar.add_component<TransformComponent>(glm::vec2(window_width - 74, 10.0),
@@ -211,7 +215,7 @@ void Game::load_level(/*int level*/) {
     tank.add_component<SpriteComponent>("tank-image", 32, 32, 2, false);
     tank.add_component<BoxColliderComponent>(32, 32);
     tank.add_component<ProjectileEmitterComponent>(glm::vec2(100.0, 0.0), 5000,
-                                                   10000, 0, false);
+                                                   3000, 0, false);
     tank.add_component<HealthComponent>(100);
 
     Entity truck = registry->create_entity();
@@ -221,7 +225,7 @@ void Game::load_level(/*int level*/) {
     truck.add_component<SpriteComponent>("truck-image", 32, 32, 1, false);
     truck.add_component<BoxColliderComponent>(32, 32);
     truck.add_component<ProjectileEmitterComponent>(glm::vec2(0.0, 100.0), 2000,
-                                                    10000, 0, false);
+                                                    5000, 0, false);
     truck.add_component<HealthComponent>(100);
 
     // tank.kill();
@@ -261,6 +265,7 @@ void Game::update() {
     registry->get_system<DamageSystem>().subscribe_to_events(event_bus);
     registry->get_system<KeyboardControlSystem>().subscribe_to_events(
         event_bus);
+    registry->get_system<ProjectileEmitSystem>().subscribe_to_events(event_bus);
 
     // update registry to process the entities that waiting to be
     // created/deleted
@@ -272,6 +277,7 @@ void Game::update() {
     registry->get_system<CollisionSystem>().update(event_bus);
     registry->get_system<CameraMovementSystem>().update(camera);
     registry->get_system<ProjectileEmitSystem>().update(registry);
+    registry->get_system<ProjectileLifecycleSystem>().update();
 
     //  player_position.x += player_velocity.x * delta_time;
     //  player_position.y += player_velocity.y * delta_time;
