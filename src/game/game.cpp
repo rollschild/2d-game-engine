@@ -21,6 +21,7 @@
 #include "../components/animation_component.h"
 #include "../components/box_collider_component.h"
 #include "../components/camera_follow_component.h"
+#include "../components/health_component.h"
 #include "../components/keyboard_controlled_component.h"
 #include "../components/projectile_emitter_component.h"
 #include "../components/rigid_body_component.h"
@@ -188,6 +189,7 @@ void Game::load_level(/*int level*/) {
         glm::vec2(0, -80), glm::vec2(80, 0), glm::vec2(0, 80),
         glm::vec2(-80, 0));
     chopper.add_component<CameraFollowComponent>();
+    chopper.add_component<HealthComponent>(100);
 
     Entity radar = registry->create_entity();
     radar.add_component<TransformComponent>(glm::vec2(window_width - 74, 10.0),
@@ -210,6 +212,7 @@ void Game::load_level(/*int level*/) {
     tank.add_component<BoxColliderComponent>(32, 32);
     tank.add_component<ProjectileEmitterComponent>(glm::vec2(100.0, 0.0), 5000,
                                                    10000, 0, false);
+    tank.add_component<HealthComponent>(100);
 
     Entity truck = registry->create_entity();
     truck.add_component<TransformComponent>(glm::vec2(10.0, 10.0),
@@ -219,6 +222,7 @@ void Game::load_level(/*int level*/) {
     truck.add_component<BoxColliderComponent>(32, 32);
     truck.add_component<ProjectileEmitterComponent>(glm::vec2(0.0, 100.0), 2000,
                                                     10000, 0, false);
+    truck.add_component<HealthComponent>(100);
 
     // tank.kill();
 
