@@ -143,6 +143,9 @@ void Registry::group_entity(Entity ent, const std::string& group) {
 }
 
 bool Registry::entity_in_group(Entity ent, const std::string& group) const {
+    if (group_entities_map.find(group) == group_entities_map.end()) {
+        return false;
+    }
     auto entities = group_entities_map.at(group);
     return entities.find(ent.get_id()) != entities.end();
 }

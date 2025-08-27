@@ -56,6 +56,7 @@ class ProjectileEmitSystem : public System {
 
                     // create new projectile entity and add it to the world
                     Entity projectile = ent.registry->create_entity();
+                    projectile.group("projectiles");
                     projectile.add_component<TransformComponent>(
                         project_pos, glm::vec2(1.0, 1.0), 0.0);
                     projectile.add_component<RigidBodyComponent>(project_vel);
@@ -97,6 +98,7 @@ class ProjectileEmitSystem : public System {
                 }
 
                 Entity projectile = registry->create_entity();
+                projectile.group("projectiles");
                 projectile.add_component<TransformComponent>(
                     project_pos, glm::vec2(1.0, 1.0), 0.0);
                 projectile.add_component<RigidBodyComponent>(
