@@ -119,7 +119,8 @@ void System::require_component() {
  */
 class IPool {
    public:
-    virtual ~IPool() {}
+    virtual ~IPool() = default;
+    virtual void remove_entity_from_pool(int entity_id) = 0;
 };
 
 /**
@@ -129,18 +130,68 @@ template <typename T>
 class Pool : public IPool {
    private:
     std::vector<T> data;
+    int size;
+
+    std::unordered_map<int, int> entity_id_to_index;
+    std::unordered_map<int, int> index_to_entity_id;
 
    public:
-    Pool(int size = 100) { data.resize(size); }
+    Pool(int cap = 100) {
+        size = 0;
+        data.resize(cap);
+    }
     virtual ~Pool() = default;
 
-    bool is_empty() const { return data.empty(); }
+    bool is_empty() const { return size == 0; }
     int get_size() const { return data.size(); }
     void resize(int n) { data.resize(n); }
-    void clear() { data.clear(); }
+    void clear() {
+        data.clear();
+        size = 0;
+    }
     void add(T object) { data.push_back(object); }
-    void set(int index, T obj) { data[index] = obj; }
-    T& get(int index) { return static_cast<T&>(data[index]); }
+
+    void set(int entity_id, T obj) {
+        if (entity_id_to_index.find(entity_id) != entity_id_to_index.end()) {
+            int index = entity_id_to_index[entity_id];
+            data[index] = obj;
+        } else {
+            int index = size;
+            entity_id_to_index.emplace(entity_id, index);
+            index_to_entity_id.emplace(index, entity_id);
+            if (index >= static_cast<int>(data.capacity())) {
+                data.resize(size * 2);
+            }
+            data[index] = obj;
+            size++;
+        }
+    }
+
+    void remove(int entity_id) {
+        int index_to_remove = entity_id_to_index[entity_id];
+        int index_to_replace = size - 1;
+        int entity_id_to_replace = index_to_entity_id[index_to_replace];
+        data[index_to_remove] = data[index_to_replace];
+
+        entity_id_to_index[entity_id_to_replace] = index_to_remove;
+        index_to_entity_id[index_to_remove] = entity_id_to_replace;
+
+        entity_id_to_index.erase(entity_id);
+        index_to_entity_id.erase(index_to_replace);
+
+        size--;
+    }
+
+    void remove_entity_from_pool(int entity_id) override {
+        if (entity_id_to_index.find(entity_id) != entity_id_to_index.end()) {
+            remove(entity_id);
+        }
+    }
+
+    T& get(int entity_id) {
+        int index = entity_id_to_index[entity_id];
+        return static_cast<T&>(data[index]);
+    }
     T& operator[](unsigned int index) { return data[index]; }
 };
 
@@ -262,10 +313,6 @@ void Registry::add_component(Entity ent, TArgs&&... args) {
         std::static_pointer_cast<Pool<TComponent>>(
             component_pools[component_id]);
 
-    if (entity_id >= component_pool->get_size()) {
-        component_pool->resize(num_entities);
-    }
-
     TComponent new_component(std::forward<TArgs>(args)...);
 
     component_pool->set(entity_id, new_component);
@@ -279,6 +326,10 @@ template <typename T>
 void Registry::remove_component(Entity ent) {
     const auto component_id = Component<T>::get_id();
     const auto entity_id = ent.get_id();
+
+    std::shared_ptr<Pool<T>> component_pool =
+        std::static_pointer_cast<Pool<T>>(component_pools[component_id]);
+    component_pool->remove(entity_id);
 
     entity_component_sigs[entity_id].set(component_id, false);
 }

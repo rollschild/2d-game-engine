@@ -115,6 +115,12 @@ void Registry::update() {
     for (auto ent : entities_to_be_killed) {
         remove_entity_from_systems(ent);
         entity_component_sigs[ent.get_id()].reset();
+
+        // remove entity from component pools
+        for (auto pool : component_pools) {
+            pool->remove_entity_from_pool(ent.get_id());
+        }
+
         free_ids.push_back(ent.get_id());
 
         remove_entity_tag(ent);
