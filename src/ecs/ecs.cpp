@@ -118,7 +118,9 @@ void Registry::update() {
 
         // remove entity from component pools
         for (auto pool : component_pools) {
-            pool->remove_entity_from_pool(ent.get_id());
+            if (pool) {
+                pool->remove_entity_from_pool(ent.get_id());
+            }
         }
 
         free_ids.push_back(ent.get_id());
