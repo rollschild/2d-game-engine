@@ -42,6 +42,8 @@ class RenderTextSystem : public System {
                 label_width, label_height};
 
             SDL_RenderCopy(renderer, texture, NULL, &dst_rect);
+
+            SDL_DestroyTexture(texture);
         }
     }
 };

@@ -40,6 +40,7 @@
 #include "../systems/projectile_emit_system.h"
 #include "../systems/projectile_lifecycle_system.h"
 #include "../systems/render_collider_system.h"
+#include "../systems/render_health_bar_system.h"
 #include "../systems/render_system.h"
 #include "../systems/render_text_system.h"
 
@@ -144,6 +145,7 @@ void Game::load_level(/*int level*/) {
     registry->add_system<ProjectileEmitSystem>();
     registry->add_system<ProjectileLifecycleSystem>();
     registry->add_system<RenderTextSystem>();
+    registry->add_system<RenderHealthBarSystem>();
 
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
@@ -159,6 +161,8 @@ void Game::load_level(/*int level*/) {
     asset_store->add_texture(renderer, "bullet-image",
                              "./assets/images/bullet.png");
     asset_store->add_font("charriot-font", "./assets/fonts/charriot.ttf", 24);
+    asset_store->add_font("pico8-font-5", "./assets/fonts/pico8.ttf", 5);
+    asset_store->add_font("pico8-font-10", "./assets/fonts/pico8.ttf", 10);
 
     // Load tilemap
     int tile_size = 32;
@@ -320,6 +324,8 @@ void Game::render() {
     registry->get_system<RenderSystem>().update(renderer, asset_store, camera);
     registry->get_system<RenderTextSystem>().update(renderer, asset_store,
                                                     camera);
+    registry->get_system<RenderHealthBarSystem>().update(renderer, asset_store,
+                                                         camera);
     if (is_debug) {
         registry->get_system<RenderColliderSystem>().update(renderer, camera);
     }
