@@ -8,6 +8,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
 #include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
 
 #include <cstdlib>
@@ -26,6 +27,7 @@
 #include "../components/projectile_emitter_component.h"
 #include "../components/rigid_body_component.h"
 #include "../components/sprite_component.h"
+#include "../components/text_label_component.h"
 #include "../components/transform_component.h"
 #include "../ecs/ecs.h"
 #include "../logger/logger.h"
@@ -39,6 +41,7 @@
 #include "../systems/projectile_lifecycle_system.h"
 #include "../systems/render_collider_system.h"
 #include "../systems/render_system.h"
+#include "../systems/render_text_system.h"
 
 int Game::map_width;
 int Game::map_height;
@@ -57,6 +60,11 @@ Game::~Game() { Logger::log("Game destructor called!"); }
 void Game::initialize() {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         Logger::err("ERROR initializing SDL!");
+        return;
+    }
+
+    if (TTF_Init() != 0) {
+        Logger::log("Error initialzing SDL TTF.");
         return;
     }
 
@@ -135,6 +143,7 @@ void Game::load_level(/*int level*/) {
     registry->add_system<CameraMovementSystem>();
     registry->add_system<ProjectileEmitSystem>();
     registry->add_system<ProjectileLifecycleSystem>();
+    registry->add_system<RenderTextSystem>();
 
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
@@ -149,6 +158,7 @@ void Game::load_level(/*int level*/) {
                              "./assets/images/radar.png");
     asset_store->add_texture(renderer, "bullet-image",
                              "./assets/images/bullet.png");
+    asset_store->add_font("charriot-font", "./assets/fonts/charriot.ttf", 24);
 
     // Load tilemap
     int tile_size = 32;
@@ -233,6 +243,12 @@ void Game::load_level(/*int level*/) {
                                                     5000, 10, false);
     truck.add_component<HealthComponent>(100);
 
+    Entity label = registry->create_entity();
+    SDL_Color white = {255, 255, 255, 0};
+    label.add_component<TextLabelComponent>(
+        glm::vec2(window_width / 2 - 40, 100), "CHOPPER 1.0", "charriot-font",
+        white, true);
+
     // tank.kill();
 
     // Entity tank = registry.create_entity();
@@ -302,6 +318,8 @@ void Game::render() {
     SDL_RenderClear(renderer);
 
     registry->get_system<RenderSystem>().update(renderer, asset_store, camera);
+    registry->get_system<RenderTextSystem>().update(renderer, asset_store,
+                                                    camera);
     if (is_debug) {
         registry->get_system<RenderColliderSystem>().update(renderer, camera);
     }

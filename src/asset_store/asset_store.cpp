@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <string>
 
@@ -20,6 +21,11 @@ void AssetStore::clear_assets() {
         SDL_DestroyTexture(texture.second);
     }
     textures.clear();
+
+    for (auto font : fonts) {
+        TTF_CloseFont(font.second);
+    }
+    fonts.clear();
 }
 
 void AssetStore::add_texture(SDL_Renderer* renderer,
@@ -36,4 +42,13 @@ void AssetStore::add_texture(SDL_Renderer* renderer,
 
 SDL_Texture* AssetStore::get_texture(const std::string& asset_id) const {
     return textures.at(asset_id);
+}
+
+void AssetStore::add_font(const std::string& asset_id,
+                          const std::string& file_path, int font_size) {
+    fonts.emplace(asset_id, TTF_OpenFont(file_path.c_str(), font_size));
+}
+
+TTF_Font* AssetStore::get_font(const std::string& asset_id) {
+    return fonts[asset_id];
 }

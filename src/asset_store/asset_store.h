@@ -2,6 +2,7 @@
 #define INCLUDED_ASSET_STORE_H
 
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_ttf.h>
 
 #include <map>
 #include <string>
@@ -9,6 +10,7 @@
 class AssetStore {
    private:
     std::map<std::string, SDL_Texture*> textures;
+    std::map<std::string, TTF_Font*> fonts;
 
    public:
     AssetStore();
@@ -18,6 +20,10 @@ class AssetStore {
     void add_texture(SDL_Renderer* renderer, const std::string& asset_id,
                      const std::string& file_path);
     SDL_Texture* get_texture(const std::string& asset_id) const;
+
+    void add_font(const std::string& asset_id, const std::string& file_path,
+                  int font_size);
+    TTF_Font* get_font(const std::string& asset_id);
 };
 
 #endif
