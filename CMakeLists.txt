@@ -17,8 +17,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
 find_package(glm REQUIRED)
-find_package(imgui REQUIRED)
+# find_package(imgui REQUIRED)
 find_package(sol2 REQUIRED)
+find_package(X11 REQUIRED)
 
 set(CMAKE_C_COMPILER gcc)
 if(MSVC)

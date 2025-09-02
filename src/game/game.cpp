@@ -10,6 +10,9 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
+#include <libs/imgui/imgui.h>
+#include <libs/imgui/imgui_impl_sdl2.h>
+#include <libs/imgui/imgui_impl_sdlrenderer2.h>
 
 #include <cstdlib>
 #include <fstream>
@@ -96,6 +99,10 @@ void Game::initialize() {
         Logger::err("ERROR creating SDL renderer!");
         return;
     }
+
+    ImGui::CreateContext();
+    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDLRenderer2_Init(renderer);
 
     // change video mode to be real full screen
     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);

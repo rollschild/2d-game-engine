@@ -53,10 +53,18 @@
 
               glm
 
+              xorg.libX11
+              xorg.libXext
+              xorg.libXrandr
+              xorg.libXinerama
+              xorg.libXcursor
+              xorg.libXi
+              xorg.libXfixes
+
               lua5_4_compat
               sol2
 
-              imgui
+              # imgui
 
               socat
             ];
