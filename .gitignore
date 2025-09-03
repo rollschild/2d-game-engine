@@ -4,6 +4,8 @@ build/
 
 assets/angrybirds/._*
 
+imgui.ini
+
 # Prerequisites
 *.d
 

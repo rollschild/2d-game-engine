@@ -4,6 +4,7 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_surface.h>
@@ -43,6 +44,7 @@
 #include "../systems/projectile_emit_system.h"
 #include "../systems/projectile_lifecycle_system.h"
 #include "../systems/render_collider_system.h"
+#include "../systems/render_gui_system.h"
 #include "../systems/render_health_bar_system.h"
 #include "../systems/render_system.h"
 #include "../systems/render_text_system.h"
@@ -100,7 +102,17 @@ void Game::initialize() {
         return;
     }
 
+    IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+
+    // enable keyboard controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    // enable keyboard controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+    // Set up platform/renderer backends
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
     ImGui_ImplSDLRenderer2_Init(renderer);
 
@@ -119,6 +131,15 @@ void Game::initialize() {
 void Game::process_input() {
     SDL_Event sdl_event;
     while (SDL_PollEvent(&sdl_event)) {
+        // ImGui SDL input
+        ImGui_ImplSDL2_ProcessEvent(&sdl_event);
+        ImGuiIO &io = ImGui::GetIO();
+        int mouse_x, mouse_y;
+        const int buttons = SDL_GetMouseState(&mouse_x, &mouse_y);
+        io.MousePos = ImVec2(mouse_x, mouse_y);
+        io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
+        io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+
         switch (sdl_event.type) {
             case SDL_QUIT:
                 is_running = false;
@@ -153,6 +174,7 @@ void Game::load_level(/*int level*/) {
     registry->add_system<ProjectileLifecycleSystem>();
     registry->add_system<RenderTextSystem>();
     registry->add_system<RenderHealthBarSystem>();
+    registry->add_system<RenderGUISystem>();
 
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
@@ -335,6 +357,16 @@ void Game::render() {
                                                          camera);
     if (is_debug) {
         registry->get_system<RenderColliderSystem>().update(renderer, camera);
+
+        registry->get_system<RenderGUISystem>().update(renderer, registry);
+
+        // ImGui_ImplSDLRenderer2_NewFrame();
+        // ImGui_ImplSDL2_NewFrame();
+        // ImGui::NewFrame();
+        // ImGui::ShowDemoWindow();
+        // ImGui::Render();
+        // ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(),
+        // renderer);
     }
 
     // draw a PNG texture
@@ -356,6 +388,10 @@ void Game::render() {
 }
 
 void Game::destroy() {
+    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
