@@ -358,7 +358,8 @@ void Game::render() {
     if (is_debug) {
         registry->get_system<RenderColliderSystem>().update(renderer, camera);
 
-        registry->get_system<RenderGUISystem>().update(renderer, registry);
+        registry->get_system<RenderGUISystem>().update(renderer, registry,
+                                                       camera);
 
         // ImGui_ImplSDLRenderer2_NewFrame();
         // ImGui_ImplSDL2_NewFrame();
