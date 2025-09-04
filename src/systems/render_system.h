@@ -57,7 +57,7 @@ class RenderSystem : public System {
 
             SDL_RenderCopyEx(
                 renderer, asset_store->get_texture(sprite.asset_id), &src_rect,
-                &dst_rect, transform.rotation, NULL, SDL_FLIP_NONE);
+                &dst_rect, transform.rotation, NULL, sprite.flip);
 
             /*
             SDL_Rect obj = {

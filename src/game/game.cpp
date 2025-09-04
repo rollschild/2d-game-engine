@@ -181,6 +181,8 @@ void Game::load_level(/*int level*/) {
                              "./assets/images/tank-tiger-right.png");
     asset_store->add_texture(renderer, "truck-image",
                              "./assets/images/truck-ford-right.png");
+    asset_store->add_texture(renderer, "tree-image",
+                             "./assets/images/tree.png");
     asset_store->add_texture(renderer, "tilemap-image",
                              "./assets/tilemaps/jungle.png");
     asset_store->add_texture(renderer, "chopper-image",
@@ -276,6 +278,20 @@ void Game::load_level(/*int level*/) {
                                                     5000, 10, false);
     truck.add_component<HealthComponent>(100);
 
+    Entity tree_a = registry->create_entity();
+    tree_a.group("obstacles");
+    tree_a.add_component<TransformComponent>(glm::vec2(600.0, 495.0),
+                                             glm::vec2(1.0, 1.0), 0.0);
+    tree_a.add_component<SpriteComponent>("tree-image", 16, 32, 2);
+    tree_a.add_component<BoxColliderComponent>(16, 32);
+
+    Entity tree_b = registry->create_entity();
+    tree_b.group("obstacles");
+    tree_b.add_component<TransformComponent>(glm::vec2(400.0, 495.0),
+                                             glm::vec2(1.0, 1.0), 0.0);
+    tree_b.add_component<SpriteComponent>("tree-image", 16, 32, 2);
+    tree_b.add_component<BoxColliderComponent>(16, 32);
+
     Entity label = registry->create_entity();
     SDL_Color white = {255, 255, 255, 0};
     label.add_component<TextLabelComponent>(
@@ -316,6 +332,7 @@ void Game::update() {
 
     // Perform subscription of events for all systems
     // the subscription is _PER FRAME_
+    registry->get_system<MovementSystem>().subscribe_to_events(event_bus);
     registry->get_system<DamageSystem>().subscribe_to_events(event_bus);
     registry->get_system<KeyboardControlSystem>().subscribe_to_events(
         event_bus);

@@ -2,6 +2,7 @@
 #define INCLUDED_SPRITE_COMPONENT_H
 
 #include <SDL2/SDL_rect.h>
+#include <SDL2/SDL_render.h>
 
 #include <glm/glm.hpp>
 #include <string>
@@ -11,6 +12,7 @@ struct SpriteComponent {
     int width;
     int height;
     unsigned z_index;
+    SDL_RendererFlip flip;
     bool is_fixed;
     SDL_Rect src_rect;
 
@@ -21,6 +23,7 @@ struct SpriteComponent {
           width(width),
           height(height),
           z_index(z_index),
+          flip(SDL_FLIP_NONE),
           is_fixed(is_fixed) {
         this->src_rect = {src_rect_x, src_rect_y, width, height};
     }

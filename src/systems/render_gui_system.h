@@ -35,8 +35,8 @@ class RenderGUISystem : public System {
             // ImGui::Text("Here is where we spawn new enemies...");
             static int pos_x = 0;
             static int pos_y = 0;
-            static int scale_x = 0;
-            static int scale_y = 0;
+            static int scale_x = 1;
+            static int scale_y = 1;
             static int vel_x = 0;
             static int vel_y = 0;
             static int health = 100;
