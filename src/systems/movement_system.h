@@ -66,6 +66,28 @@ class MovementSystem : public System {
             transform.position.x += rigid_body.velocity.x * delta_time;
             transform.position.y += rigid_body.velocity.y * delta_time;
 
+            if (entity.has_tag("player")) {
+                int padding_left = 10;
+                int padding_top = 10;
+                int padding_right = 50;
+                int padding_bottom = 50;
+
+                transform.position.x = transform.position.x < padding_left
+                                           ? padding_left
+                                           : transform.position.x;
+                transform.position.x =
+                    transform.position.x > Game::map_width - padding_right
+                        ? Game::map_width - padding_right
+                        : transform.position.x;
+                transform.position.y = transform.position.y < padding_top
+                                           ? padding_top
+                                           : transform.position.y;
+                transform.position.y =
+                    transform.position.y > Game::map_height - padding_bottom
+                        ? Game::map_height - padding_bottom
+                        : transform.position.y;
+            }
+
             bool is_entity_outside_map =
                 (transform.position.x < 0 ||
                  transform.position.x > Game::map_width ||
