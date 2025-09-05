@@ -33,6 +33,22 @@ class RenderSystem : public System {
             RenderableEntity re;
             re.sprite_component = entity.get_component<SpriteComponent>();
             re.transform_component = entity.get_component<TransformComponent>();
+
+            // Do not render entities that are outside camera view
+            bool is_entity_outside_camera =
+                (re.transform_component.position.x +
+                         (re.transform_component.scale.x *
+                          re.sprite_component.width) <
+                     camera.x ||
+                 re.transform_component.position.x > camera.x + camera.w ||
+                 re.transform_component.position.y +
+                         (re.transform_component.scale.y *
+                          re.sprite_component.height) <
+                     camera.y ||
+                 re.transform_component.position.y > camera.y + camera.h);
+            if (is_entity_outside_camera && !re.sprite_component.is_fixed) {
+                continue;
+            }
             renderable_entities.emplace_back(re);
         }
         std::sort(renderable_entities.begin(), renderable_entities.end(),
