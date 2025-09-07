@@ -45,7 +45,7 @@ class RenderGUISystem : public System {
             static float proj_speed = 100.0;
             static int proj_repeat = 10;
             static int proj_duration = 10;
-            const char* sprites[] = {"tank-image", "truck-image"};
+            const char* sprites[] = {"tank-texture", "truck-texture"};
             static int selected_sprite_index = 0;
 
             // Section to input enemy sprite texture ID

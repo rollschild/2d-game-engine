@@ -60,8 +60,8 @@ class ProjectileEmitSystem : public System {
                     projectile.add_component<TransformComponent>(
                         project_pos, glm::vec2(1.0, 1.0), 0.0);
                     projectile.add_component<RigidBodyComponent>(project_vel);
-                    projectile.add_component<SpriteComponent>("bullet-image", 4,
-                                                              4, 99);
+                    projectile.add_component<SpriteComponent>("bullet-texture",
+                                                              4, 4, 99);
                     projectile.add_component<BoxColliderComponent>(4, 4);
                     projectile.add_component<ProjectileComponent>(
                         projectile_emitter.is_friendly,
@@ -103,8 +103,8 @@ class ProjectileEmitSystem : public System {
                     project_pos, glm::vec2(1.0, 1.0), 0.0);
                 projectile.add_component<RigidBodyComponent>(
                     projectile_emitter.project_vel);
-                projectile.add_component<SpriteComponent>("bullet-image", 4, 4,
-                                                          99);
+                projectile.add_component<SpriteComponent>("bullet-texture", 4,
+                                                          4, 99);
                 projectile.add_component<BoxColliderComponent>(4, 4);
                 projectile.add_component<ProjectileComponent>(
                     projectile_emitter.is_friendly,

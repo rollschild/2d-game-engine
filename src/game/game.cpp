@@ -21,6 +21,7 @@
 #include <glm/glm.hpp>
 #include <iostream>
 #include <memory>
+#include <sol/types.hpp>
 #include <string>
 
 #include "../components/animation_component.h"
@@ -48,6 +49,7 @@
 #include "../systems/render_health_bar_system.h"
 #include "../systems/render_system.h"
 #include "../systems/render_text_system.h"
+#include "level_loader.h"
 
 int Game::map_width;
 int Game::map_height;
@@ -162,20 +164,6 @@ void Game::process_input() {
 // glm::vec2 player_velocity;
 
 void Game::load_level(/*int level*/) {
-    registry->add_system<MovementSystem>();
-    registry->add_system<RenderSystem>();
-    registry->add_system<AnimationSystem>();
-    registry->add_system<CollisionSystem>();
-    registry->add_system<RenderColliderSystem>();
-    registry->add_system<DamageSystem>();
-    registry->add_system<KeyboardControlSystem>();
-    registry->add_system<CameraMovementSystem>();
-    registry->add_system<ProjectileEmitSystem>();
-    registry->add_system<ProjectileLifecycleSystem>();
-    registry->add_system<RenderTextSystem>();
-    registry->add_system<RenderHealthBarSystem>();
-    registry->add_system<RenderGUISystem>();
-
     // Add assets
     asset_store->add_texture(renderer, "tank-image",
                              "./assets/images/tank-tiger-right.png");
@@ -307,7 +295,26 @@ void Game::load_level(/*int level*/) {
     // player_velocity = glm::vec2(50.0, 25.0);
 }
 
-void Game::setup() { load_level(); }
+void Game::setup() {
+    registry->add_system<MovementSystem>();
+    registry->add_system<RenderSystem>();
+    registry->add_system<AnimationSystem>();
+    registry->add_system<CollisionSystem>();
+    registry->add_system<RenderColliderSystem>();
+    registry->add_system<DamageSystem>();
+    registry->add_system<KeyboardControlSystem>();
+    registry->add_system<CameraMovementSystem>();
+    registry->add_system<ProjectileEmitSystem>();
+    registry->add_system<ProjectileLifecycleSystem>();
+    registry->add_system<RenderTextSystem>();
+    registry->add_system<RenderHealthBarSystem>();
+    registry->add_system<RenderGUISystem>();
+
+    LevelLoader loader;
+    lua.open_libraries(sol::lib::base, sol::lib::math);
+
+    loader.load_level(lua, registry, asset_store, renderer, 1);
+}
 
 void Game::update() {
     // If too fast, wait some time until we reach MILLISECS_PER_FRAME

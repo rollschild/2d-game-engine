@@ -14,6 +14,7 @@ target_sources(
   main
   PRIVATE main.cpp
           game/game.cpp
+          game/level_loader.cpp
           logger/logger.cpp
           ecs/ecs.cpp
           asset_store/asset_store.cpp

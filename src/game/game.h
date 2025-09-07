@@ -6,6 +6,7 @@
 #include <SDL2/SDL_video.h>
 
 #include <memory>
+#include <sol/state.hpp>
 
 #include "../asset_store/asset_store.h"
 #include "../ecs/ecs.h"
@@ -24,6 +25,8 @@ class Game {
     SDL_Window *window;
     SDL_Renderer *renderer;
     SDL_Rect camera;
+
+    sol::state lua;
 
     std::unique_ptr<Registry> registry;
     std::unique_ptr<AssetStore> asset_store;
