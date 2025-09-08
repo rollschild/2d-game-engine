@@ -49,6 +49,7 @@
 #include "../systems/render_health_bar_system.h"
 #include "../systems/render_system.h"
 #include "../systems/render_text_system.h"
+#include "../systems/script_system.h"
 #include "level_loader.h"
 
 int Game::map_width;
@@ -309,6 +310,10 @@ void Game::setup() {
     registry->add_system<RenderTextSystem>();
     registry->add_system<RenderHealthBarSystem>();
     registry->add_system<RenderGUISystem>();
+    registry->add_system<ScriptSystem>();
+
+    // Create bindings between C++ and Lua
+    registry->get_system<ScriptSystem>().create_lua_bindings(lua);
 
     LevelLoader loader;
     lua.open_libraries(sol::lib::base, sol::lib::math);
@@ -356,6 +361,7 @@ void Game::update() {
     registry->get_system<CameraMovementSystem>().update(camera);
     registry->get_system<ProjectileEmitSystem>().update(registry);
     registry->get_system<ProjectileLifecycleSystem>().update();
+    registry->get_system<ScriptSystem>().update(delta_time, SDL_GetTicks());
 
     //  player_position.x += player_velocity.x * delta_time;
     //  player_position.y += player_velocity.y * delta_time;

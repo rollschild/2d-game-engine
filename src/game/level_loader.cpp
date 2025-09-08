@@ -19,6 +19,7 @@
 #include "../components/keyboard_controlled_component.h"
 #include "../components/projectile_emitter_component.h"
 #include "../components/rigid_body_component.h"
+#include "../components/script_component.h"
 #include "../components/sprite_component.h"
 #include "../components/text_label_component.h"
 #include "../components/transform_component.h"
@@ -263,6 +264,15 @@ void LevelLoader::load_level(
                                     ["left_vel"]["y"]));
             }
             Logger::log("Added keyboard_controller");
+
+            // Script
+            sol::optional<sol::table> script =
+                entity["components"]["on_update_script"];
+            if (script != sol::nullopt) {
+                sol::function func =
+                    entity["components"]["on_update_script"][0];
+                new_entity.add_component<ScriptComponent>(func);
+            }
         }
 
         i++;
