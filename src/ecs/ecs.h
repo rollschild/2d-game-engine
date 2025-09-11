@@ -51,7 +51,7 @@ class Entity {
 
    public:
     Entity(int id) : id(id) {};
-    Entity(const Entity& entity) = default;
+    Entity(const Entity& entity) = default;  // copy constructor
 
     // hold pointer to entity's owner registry
     // `class` keyword - no need to forward declare before this class `class

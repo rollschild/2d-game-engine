@@ -52,6 +52,7 @@
 #include "../systems/script_system.h"
 #include "level_loader.h"
 
+// to make static vars in class `Game` work
 int Game::map_width;
 int Game::map_height;
 int Game::window_width;

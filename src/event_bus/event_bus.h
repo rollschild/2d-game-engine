@@ -62,6 +62,7 @@ class EventBus {
     template <typename TEvent, typename TOwner>
     void subscribe_to_event(TOwner* owner_instance,
                             void (TOwner::*callback)(TEvent&)) {
+        // test if the unique_ptr actually manages an object or not
         if (!subscribers[typeid(TEvent)].get()) {
             subscribers[typeid(TEvent)] = std::make_unique<HandlerList>();
         }

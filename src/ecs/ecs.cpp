@@ -88,6 +88,8 @@ Entity Registry::create_entity() {
         entity_id = num_entities++;
         // make sure the entity_component_sigs vector can handle the new entity
         if (entity_id >= entity_component_sigs.size()) {
+            // is there a need to resize?
+            // its index is entity ID - thus we do not use `push_back`
             entity_component_sigs.resize(entity_id + 1);
         }
     } else {

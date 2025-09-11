@@ -4,6 +4,8 @@
 
 A simple but feature-rich game engine written in C++, with Lua scripting capabilities.
 
+Status: FINISHED.
+
 ## Build & Run
 
 ### Build
